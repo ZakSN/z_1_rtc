@@ -1,0 +1,9 @@
+*
+!src/
+!sim/
+!*.lpf
+!*.lpf
+!*.v
+!Makefile
+!.gitignore
+!README
