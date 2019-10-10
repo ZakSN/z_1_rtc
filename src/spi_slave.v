@@ -26,51 +26,50 @@ module spi_slave #(
 	output reg rx_dv
 );
 
-wire ah_ss;
-assign ah_ss = ~ss;
-
 reg [TXWIDTH-1:0] txb;
-reg [RXWIDTH-1:0] rxb;
 
 integer bits_in, bits_out;
 
-// clock synchronization
+reg s_sclk, ds_sclk; //sync'd sclk, snyc'd delayed sclk
+wire ppulse_s_sclk, npulse_s_sclk; //pulse on +ve/-ve edge of s_sclk
+
+// synchronize sclk to the internal clock
 always @(posedge clk) begin
-	if (rst) begin
-		rxb <= 0;
-		txb <= 0;
-		rx_buffer <= 0;
-		bits_in <= 0;
-		bits_out <= 0;
+	s_sclk <= sclk;
+	ds_sclk <= s_sclk;
+end
+
+//generate pulses on the +ve and -ve edges
+assign ppulse_s_sclk = s_sclk & (~ds_sclk);
+assign npulse_s_sclk = (~s_sclk) & ds_sclk;
+
+always @(posedge clk) begin
+	if(rst) begin
 		miso <= 0;
-	end else if (wr) begin
-		txb <= tx_buffer;
-		bits_out <= TXWIDTH;
-	end else begin
-		txb <= txb;
+		rx_buffer <= 0;
+		rx_dv <= 0;
+		bits_in <= 0;
+	end else if (ppulse_s_sclk) begin
+		// posedge of s_sclk
+		rx_buffer <= {rx_buffer[RXWIDTH-2:0], mosi};
+		bits_in <= bits_in + 1;
+	end else if (npulse_s_sclk) begin
+		// negedge of s_sclk
+		if (bits_out != 0) begin
+			miso <= txb[TXWIDTH-1];
+			txb <= {txb[TXWIDTH-2:0], 1'b0};
+			bits_out <= bits_out - 1;
+		end
 	end
 	if (bits_in == RXWIDTH) begin
 		rx_dv <= 1;
 		bits_in <= 0;
-		rx_buffer <= rxb;
-	end else begin
-		rx_dv <= 0;
 	end
-end
-
-// recieve bits
-always @(posedge sclk) begin
-	rxb <= {rxb[RXWIDTH-2:0], mosi};
-	bits_in <= bits_in + 1;
-end
-
-// transmit bits
-always @(posedge ~sclk) begin
-	if (bits_out != 0) begin
-		miso <= txb[TXWIDTH-1];
-		txb <= {txb[TXWIDTH-2:0], 1'b0};
-		bits_out <= bits_out - 1;
+	if (wr) begin
+		txb <= tx_buffer;
+		bits_out <= TXWIDTH;
 	end
+	rx_dv <= 0;
 end
 
 endmodule
