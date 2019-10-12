@@ -1,9 +1,11 @@
 *
 !src/
 !sim/
+!src/python
 !*.lpf
 !*.lpf
 !*.v
+!*.py
 !Makefile
 !.gitignore
 !README
