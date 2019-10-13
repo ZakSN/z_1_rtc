@@ -49,6 +49,7 @@ always @(posedge clk) begin
 		rx_buffer <= 0;
 		rx_dv <= 0;
 		bits_in <= 0;
+		bits_out <= 0;
 	end else if (ppulse_s_sclk) begin
 		// posedge of s_sclk
 		rx_buffer <= {rx_buffer[RXWIDTH-2:0], mosi};
@@ -64,12 +65,13 @@ always @(posedge clk) begin
 	if (bits_in == RXWIDTH) begin
 		rx_dv <= 1;
 		bits_in <= 0;
+	end else begin
+		rx_dv <= 0;
 	end
 	if (wr) begin
 		txb <= tx_buffer;
 		bits_out <= TXWIDTH;
 	end
-	rx_dv <= 0;
 end
 
 endmodule

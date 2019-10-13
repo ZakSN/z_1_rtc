@@ -3,50 +3,64 @@ module spi_test_top (
   input pin2,
   output pin3,
   input pin4,
-  input pin5,
-  input pin6,
-  input pin7,
-  input pin8,
-  output pin9,
+  //input pin5,
+  //input pin6,
+  //input pin7,
+  //input pin8,
+  //output pin9,
   //inout pin10_sda,
   //inout pin11_scl,
-  output pin16,
-  output pin17,
-  output pin18,
+  //output pin16,
+  //output pin17,
+  //output pin18,
   //inout pin19_sclk,
-  inout pin20,
-  inout pin21,
+  //inout pin20,
+  //inout pin21,
   inout pin22
 );
 
-wire clk;
-wire [3:0] tx;
-wire [3:0] rx;
+wire clk, rst;
+assign rst = pin22;
 
-assign tx = {pin5, pin6, pin7, pin8};
-assign rx = {pin9, pin16, pin17, pin18};
+wire sclk, mosi, miso, ss;
+assign sclk = pin1;
+assign mosi = pin2;
+assign miso = pin3;
+assign ss = pin4;
+
+wire [7:0] loopback;
+wire rx_dv;
+reg wr;
+
+always @(posedge clk) begin
+	if (rx_dv && (loopback != 8'b00000000)) begin
+		wr <= 1;
+	end else begin
+		wr <= 0;
+	end
+end
 
 OSCH #(
-	.NOM_FREQ("2.08")
+	.NOM_FREQ("53.2")
 ) internal_oscillator_inst (
 	.STDBY(1'b0),
 	.OSC(clk)
 );
 
 spi_slave #(
-	.TXWIDTH(4),
-	.RXWIDTH(4)
+	.TXWIDTH(8),
+	.RXWIDTH(8)
 ) spi (
 	.clk(clk),
-	.rst(pin22),
-	.sclk(pin1),
-	.mosi(pin2),
-	.miso(pin3),
-	.ss(pin4),
-	.tx_buffer(tx),
-	.wr(pin21),
-	.rx_buffer(rx),
-	.rx_dv(pin20)
+	.rst(rst),
+	.sclk(sclk),
+	.mosi(mosi),
+	.miso(miso),
+	.ss(ss),
+	.tx_buffer(loopback),
+	.wr(wr),
+	.rx_buffer(loopback),
+	.rx_dv(rx_dv)
 );
 
 endmodule
