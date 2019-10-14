@@ -20,6 +20,7 @@ module spi_slave #(
 	// buffer to serialize and transmit
 	input [TXWIDTH-1:0] tx_buffer,
 	input wr,
+	output reg tx_halt,
 
 	// parallelized recived bits
 	output reg [RXWIDTH-1:0] rx_buffer,
@@ -60,6 +61,9 @@ always @(posedge clk) begin
 			miso <= txb[TXWIDTH-1];
 			txb <= {txb[TXWIDTH-2:0], 1'b0};
 			bits_out <= bits_out - 1;
+			tx_halt <= 1;
+		end else begin
+			tx_halt <= 0;
 		end
 	end
 	if (bits_in == RXWIDTH) begin
@@ -68,7 +72,7 @@ always @(posedge clk) begin
 	end else begin
 		rx_dv <= 0;
 	end
-	if (wr) begin
+	if (wr & ~tx_halt) begin
 		txb <= tx_buffer;
 		bits_out <= TXWIDTH;
 	end
