@@ -4,8 +4,15 @@ VERILOG=../src/
 
 all: divider spi_slave spi_test_top
 
-divider: $(VERILOG)divider.v divider_tb.v
-	iverilog divider_tb.v -l$(VERILOG)divider.v -o divider
+divider: $(VERILOG)divider.v \
+         $(VERILOG)timer.v \
+	 $(VERILOG)register.v \
+	 divider_tb.v
+	iverilog divider_tb.v \
+	-l$(VERILOG)divider.v \
+	-l$(VERILOG)timer.v \
+	-l$(VERILOG)register.v \
+	-o divider
 	vvp divider
 
 spi_slave: $(VERILOG)spi_slave.v spi_slave_tb.v

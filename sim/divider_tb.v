@@ -19,6 +19,18 @@ divider #(
 	.one_hz(opps)
 );
 
+wire [63:0] o_time;
+
+timer epoch (
+	.clk(clk),
+	.rst(rst),
+	.count_enable(1'b1),
+	.load_enable(1'b0),
+	.one_hz(opps),
+	.i_time(64'b0),
+	.o_time(o_time)
+);
+
 initial begin
 	clk = 0;
 	rst = 1;
