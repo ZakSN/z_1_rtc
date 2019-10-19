@@ -2,11 +2,11 @@ VERILOG=../src/
 
 .PHONY: clean all
 
-all: counter spi_slave
+all: divider spi_slave spi_test_top
 
-counter: $(VERILOG)counter.v counter_tb.v
-	iverilog counter_tb.v -l$(VERILOG)counter.v -o counter
-	vvp counter
+divider: $(VERILOG)divider.v divider_tb.v
+	iverilog divider_tb.v -l$(VERILOG)divider.v -o divider
+	vvp divider
 
 spi_slave: $(VERILOG)spi_slave.v spi_slave_tb.v
 	iverilog spi_slave_tb.v -l$(VERILOG)spi_slave.v -o spi_slave
@@ -26,7 +26,9 @@ spi_test_top: $(VERILOG)spi_test_top.v \
 	vvp spi_test_top
 
 clean:
-	rm -f ./counter
-	rm -f ./counter.vcd
+	rm -f ./divider
+	rm -f ./divider.vcd
 	rm -f ./spi_slave
 	rm -f ./spi_slave.vcd
+	rm -f ./spi_test_top
+	rm -f ./spi_test_top.vcd

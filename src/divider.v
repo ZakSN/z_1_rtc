@@ -1,16 +1,16 @@
-module counter #(
-	parameter WIDTH = 4
+module divider #(
+	parameter BASE_FREQ = 10_000_000
 )(
 	input clk,
 	input rst,
 	input trig,
 
-	output reg [WIDTH-1:0] count
+	output reg one_hz
 );
 
 parameter [1:0] S0 = 2'b00, S1 = 2'b01, S2 = 2'b10, S3 = 2'b11;
 reg [1:0] current_state, next_state;
-reg [WIDTH-1:0] c;
+integer count;
 
 // state register
 always @(posedge clk) begin
@@ -19,29 +19,37 @@ always @(posedge clk) begin
 		count <= 0;
 	end else begin
 		current_state <= next_state;
-		count <= c;
 	end
 end
 
-// transition logic and output
+// transition logic
 always @(*) begin
 	case(current_state)
 		S0: begin
 			next_state = (trig == 1'b1)? S2: S1;
-			c = count;
 		end
 		S1: begin
 			next_state = (trig == 1'b1)? S3: S1;
-			c = count;
 		end
 		S2: begin
 			next_state = (trig == 1'b1)? S2: S1;
-			c = count;
 		end
 		S3: begin
 			next_state = (trig == 1'b1)? S2: S1;
-			c = count + 1;
 		end
 	endcase
+end
+
+// output logic
+always @(posedge clk) begin
+	count <= count;
+	one_hz <= 0;
+	if (current_state == S3) begin
+		count <= count + 1;
+	end
+	if (count == BASE_FREQ) begin
+		count <= 0;
+		one_hz <= 1;
+	end
 end
 endmodule

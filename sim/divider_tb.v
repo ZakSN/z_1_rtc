@@ -1,22 +1,22 @@
 `timescale 10ns/1ns
 
-module counter_tb #(
-	parameter WIDTH = 4
+module divider_tb #(
+	parameter BASE_FREQ = 4
 );
 
 reg clk;
 reg rst;
 reg trig;
 
-wire [WIDTH-1:0]count;
+wire opps;
 
-counter #(
-	.WIDTH(WIDTH)
+divider #(
+	.BASE_FREQ(BASE_FREQ)
 ) dut (
 	.clk(clk),
 	.rst(rst),
 	.trig(trig),
-	.count(count)
+	.one_hz(opps)
 );
 
 initial begin
@@ -48,7 +48,7 @@ initial begin
 end
 
 initial begin
-	$dumpfile("counter.vcd");
+	$dumpfile("divider.vcd");
 	$dumpvars;
 	$dumplimit(5000000);
 end
