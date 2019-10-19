@@ -1,6 +1,6 @@
 from machine import SPI, Pin
 import time
-hard_spi = SPI(1, baudrate=1000, bits=4, sck=Pin(14), mosi=Pin(13), miso=Pin(12))
+hard_spi = SPI(1, baudrate=10000, bits=4, sck=Pin(14), mosi=Pin(13), miso=Pin(12))
 
 def check(dat):
 	hard_spi.write(bytearray([0x01]))

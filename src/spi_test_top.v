@@ -1,4 +1,7 @@
 module spi_test_top (
+  `ifdef SIM
+	input sim_clk,
+  `endif
   input pin1,
   input pin2,
   output pin3,
@@ -28,18 +31,22 @@ assign mosi = pin2;
 assign miso = pin3;
 assign ss = pin4;
 
-wire rx_dv;
-wire tx_halt;
-wire wr;
-wire [7:0] data_out;
-wire [7:0] data_in;
+wire spi_dv, spi_halt, spi_we;
+wire data_register_we;
+wire [63:0] d, q;
+wire [7:0] o_data;
+wire [7:0] i_data;
 
+`ifndef SIM
 OSCH #(
 	.NOM_FREQ("53.2")
 ) internal_oscillator_inst (
 	.STDBY(1'b0),
 	.OSC(clk)
 );
+`else
+	assign clk = sim_clk;
+`endif
 
 spi_slave #(
 	.TXWIDTH(8),
@@ -51,70 +58,34 @@ spi_slave #(
 	.mosi(mosi),
 	.miso(miso),
 	.ss(ss),
-	.tx_buffer(data_out),
-	.wr(wr),
-	.tx_halt(tx_halt),
-	.rx_buffer(data_in),
-	.rx_dv(rx_dv)
-);
-
-wire cmd_vld;
-wire [7:0] cmd;
-assign cmd_vld = (rx_dv && ((data_in == 8'h01) || (data_in == 8'h02)))? 1'b1: 1'b0;
-
-wire [63:0] d_dat;
-wire [63:0] q_dat;
-wire d_we;
-
-register #(
-	.WIDTH(8)
-) cmd_reg (
-	.clk(clk),
-	.rst(rst),
-	.we(cmd_vld),
-	.d(data_in),
-	.q(cmd)
+	.tx_buffer(o_data),
+	.wr(spi_we),
+	.tx_halt(spi_halt),
+	.rx_buffer(i_data),
+	.rx_dv(spi_dv)
 );
 
 register #(
 	.WIDTH(64)
-) data_reg (
+) data_register (
 	.clk(clk),
 	.rst(rst),
-	.we(d_we),
-	.d(d_dat),
-	.q(q_dat)
+	.we(data_register_we),
+	.d(d),
+	.q(q)
 );
 
-wire s2p_we;
-assign s2p_we = ((cmd == 8'h01) && rx_dv)? 1'b1: 1'b0;
-
-SIPO #(
-	.DEPTH(8),
-	.WIDTH(8)
-) s2p (
+spi_fsm controller (
 	.clk(clk),
 	.rst(rst),
-	.si(data_in),
-	.we(s2p_we),
-	.po(d_dat),
-	.po_dv(d_we)
-);
-
-wire p2s_we;
-assign p2s_we = ((cmd == 8'h02) && (rx_dv))? 1'b1: 1'b0;
-
-PISO #(
-	.DEPTH(8),
-	.WIDTH(8)
-) p2s (
-	.clk(clk),
-	.rst(rst),
-	.pi(q_dat),
-	.we(p2s_we),
-	.so(data_out),
-	.so_dv(wr),
-	.halt(tx_halt)
+	.spi_we(spi_we),
+	.spi_dv(spi_dv),
+	.spi_halt(spi_halt),
+	.i_data(i_data),
+	.o_data(o_data),
+	.buf_dv(data_register_we),
+	.i_buffer(q),
+	.o_buffer(d)
 );
 
 endmodule

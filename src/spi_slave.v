@@ -40,7 +40,7 @@ always @(posedge clk) begin
 	ds_sclk <= s_sclk;
 end
 
-//generate pulses on the +ve and -ve edges
+// generate pulses on the +ve and -ve edges
 assign ppulse_s_sclk = s_sclk & (~ds_sclk);
 assign npulse_s_sclk = (~s_sclk) & ds_sclk;
 
@@ -62,8 +62,6 @@ always @(posedge clk) begin
 			txb <= {txb[TXWIDTH-2:0], 1'b0};
 			bits_out <= bits_out - 1;
 			tx_halt <= 1;
-		end else begin
-			tx_halt <= 0;
 		end
 	end
 	if (bits_in == RXWIDTH) begin
@@ -72,9 +70,13 @@ always @(posedge clk) begin
 	end else begin
 		rx_dv <= 0;
 	end
+	if (bits_out == 0) begin
+		tx_halt <= 0;
+	end
 	if (wr & ~tx_halt) begin
 		txb <= tx_buffer;
 		bits_out <= TXWIDTH;
+		tx_halt <= 1;
 	end
 end
 
