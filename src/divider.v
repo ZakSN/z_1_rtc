@@ -16,7 +16,6 @@ integer count;
 always @(posedge clk) begin
 	if (rst) begin
 		current_state <= S0;
-		count <= 0;
 	end else begin
 		current_state <= next_state;
 	end
@@ -44,6 +43,9 @@ end
 always @(posedge clk) begin
 	count <= count;
 	one_hz <= 0;
+	if (rst) begin
+		count <= 0;
+	end
 	if (current_state == S3) begin
 		count <= count + 1;
 	end

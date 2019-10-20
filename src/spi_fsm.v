@@ -26,7 +26,6 @@ parameter [2:0] S0 = 3'b000,
 
 integer count;
 reg [2:0] current_state, next_state;
-reg cmd_vld;
 
 // state register
 always @(posedge clk) begin
@@ -41,7 +40,7 @@ end
 always @(*) begin
 	case(current_state)
 		S0: begin
-			if (spi_dv && (i_data != RDCMD)) begin
+			if (spi_dv && (i_data == WRCMD)) begin
 				next_state =  S1;
 			end else if (spi_dv && (i_data == RDCMD)) begin
 				next_state = S3;
@@ -82,7 +81,6 @@ always @(posedge clk) begin
 	buf_dv <= buf_dv;
 	o_buffer <= o_buffer;
 	count <= count;
-	cmd_vld <= cmd_vld;
 	if(rst) begin
 		spi_we <= 0;
 		o_data <= 0;
@@ -95,11 +93,6 @@ always @(posedge clk) begin
 				spi_we <= 0;
 				buf_dv <= 0;
 				count <= DEPTH;
-				if ((i_data == WRCMD)) begin
-					cmd_vld <= 1;
-				end else begin
-					cmd_vld <= 0;
-				end
 			end
 			S1: begin
 				if(spi_dv) begin
@@ -108,9 +101,7 @@ always @(posedge clk) begin
 				end
 			end
 			S2: begin
-				if (cmd_vld) begin
-					buf_dv <= 1;
-				end
+				buf_dv <= 1;
 			end
 			S3: begin
 				o_buffer <= i_buffer;

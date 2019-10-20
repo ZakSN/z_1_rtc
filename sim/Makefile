@@ -2,7 +2,27 @@ VERILOG=../src/
 
 .PHONY: clean all
 
-all: divider spi_slave spi_test_top
+all: z_1_rtc_top divider spi_slave spi_test_top
+
+z_1_rtc_top: $(VERILOG)divider.v \
+             $(VERILOG)spi_slave.v \
+	     $(VERILOG)spi_fsm.v \
+	     $(VERILOG)timer.v \
+	     $(VERILOG)trigger.v \
+	     $(VERILOG)register.v \
+	     $(VERILOG)z_1_rtc_top.v \
+	     z_1_rtc_top_tb.v
+	     iverilog z_1_rtc_top_tb.v \
+             -l$(VERILOG)divider.v \
+             -l$(VERILOG)spi_slave.v \
+             -l$(VERILOG)spi_fsm.v \
+             -l$(VERILOG)timer.v \
+             -l$(VERILOG)trigger.v \
+             -l$(VERILOG)register.v \
+             -l$(VERILOG)z_1_rtc_top.v \
+	     -DSIM \
+	     -o z_1_rtc_top
+	     vvp z_1_rtc_top
 
 divider: $(VERILOG)divider.v \
          $(VERILOG)timer.v \
@@ -38,4 +58,6 @@ clean:
 	rm -f ./spi_slave
 	rm -f ./spi_slave.vcd
 	rm -f ./spi_test_top
+	rm -f ./z_1_rtc_top.vcd
+	rm -f ./z_1_rtc_top
 	rm -f ./spi_test_top.vcd
