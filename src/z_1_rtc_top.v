@@ -52,7 +52,8 @@ wire epoch_le, epoch_ce;
 
 // divider signals
 wire one_hz;
-assign pin9 = one_hz;
+wire half_hz_50;
+assign pin9 = half_hz_50;
 
 `ifndef SIM
 OSCH #(
@@ -67,12 +68,13 @@ assign clk = sim_clk;
 `endif
 
 divider #(
-	.BASE_FREQ(100)
+	.BASE_FREQ(10_000_000)
 ) main_divider (
 	.clk(clk),
 	.rst(rst),
 	.trig(frequency_source),
-	.one_hz(one_hz)
+	.one_hz(one_hz),
+	.half_hz_50(half_hz_50)
 );
 
 spi_slave spi (
@@ -108,7 +110,7 @@ spi_fsm #(
 timer epoch (
 	.clk(clk),
 	.rst(rst),
-	.count_enable(1'b1), //.count_enable(epoch_ce),
+	.count_enable(epoch_ce),
 	.load_enable(epoch_le),
 	.one_hz(one_hz),
 	.i_time(i_epoch_data),

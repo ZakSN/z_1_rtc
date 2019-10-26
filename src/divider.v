@@ -5,53 +5,36 @@ module divider #(
 	input rst,
 	input trig,
 
-	output reg one_hz
+	output reg one_hz,
+	output reg half_hz_50
 );
 
-parameter [1:0] S0 = 2'b00, S1 = 2'b01, S2 = 2'b10, S3 = 2'b11;
-reg [1:0] current_state, next_state;
+reg s_trig;
+wire trig_edge_pulse;
 integer count;
 
-// state register
-always @(posedge clk) begin
-	if (rst) begin
-		current_state <= S0;
-	end else begin
-		current_state <= next_state;
-	end
-end
+assign trig_edge_pulse = trig && (~s_trig);
 
-// transition logic
-always @(*) begin
-	case(current_state)
-		S0: begin
-			next_state = (trig == 1'b1)? S2: S1;
-		end
-		S1: begin
-			next_state = (trig == 1'b1)? S3: S1;
-		end
-		S2: begin
-			next_state = (trig == 1'b1)? S2: S1;
-		end
-		S3: begin
-			next_state = (trig == 1'b1)? S2: S1;
-		end
-	endcase
-end
-
-// output logic
 always @(posedge clk) begin
+	s_trig <= s_trig;
 	count <= count;
 	one_hz <= 0;
 	if (rst) begin
+		one_hz <= 0;
+		half_hz_50 <= 0;
+		s_trig <= 0;
 		count <= 0;
+	end else begin
+		s_trig <= trig;
 	end
-	if (current_state == S3) begin
+	if (trig_edge_pulse) begin
 		count <= count + 1;
 	end
-	if (count == BASE_FREQ) begin
+	if (count >= BASE_FREQ) begin
 		count <= 0;
 		one_hz <= 1;
+		half_hz_50 <= ~half_hz_50;
 	end
 end
+
 endmodule

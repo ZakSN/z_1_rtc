@@ -9,6 +9,7 @@ reg rst;
 reg trig;
 
 wire opps;
+wire half_hz_50;
 
 divider #(
 	.BASE_FREQ(BASE_FREQ)
@@ -16,7 +17,8 @@ divider #(
 	.clk(clk),
 	.rst(rst),
 	.trig(trig),
-	.one_hz(opps)
+	.one_hz(opps),
+	.half_hz_50(half_hz_50)
 );
 
 wire [63:0] o_time;
