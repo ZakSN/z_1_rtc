@@ -57,8 +57,7 @@ assign pin9 = half_hz_50;
 
 `ifndef SIM
 OSCH #(
-	.NOM_FREQ("53.2")
-	//.NOM_FREQ(2.08)
+	.NOM_FREQ("53.20")
 ) internal_oscillator_inst (
 	.STDBY(1'b0),
 	.OSC(clk)
