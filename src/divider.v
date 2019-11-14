@@ -1,5 +1,14 @@
 module divider #(
-	parameter BASE_FREQ = 10_000_000
+	/*
+	* the rollover counter is incremented every tick of the master oscillator
+	* the nth bit of the rollover counter
+	* (<tex> f_{ROLLOVER} = \frac{f_{master}}{2^{ROLLOVER\_WIDTH-1}} <\tex>)
+	* is used to clock the internal counter.
+	*
+	* The defaults are good for 10MHz
+	*/
+	parameter INTERNAL_COUNT = 78125,
+	parameter ROLLOVER_WIDTH = 7
 )(
 	input clk,
 	input rst,
@@ -11,8 +20,7 @@ module divider #(
 
 reg s_trig;
 wire trig_edge_pulse;
-reg [6:0] rollover; // 7 bits
-parameter INTERNAL_COUNT = 78125;
+reg [(ROLLOVER_WIDTH-1):0] rollover;
 integer counter;
 reg last_rollover;
 

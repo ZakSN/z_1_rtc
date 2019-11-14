@@ -67,7 +67,8 @@ assign clk = sim_clk;
 `endif
 
 divider #(
-	.BASE_FREQ(10_000_000)
+	.INTERNAL_COUNT(3125),
+	.ROLLOVER_WIDTH(12)
 ) main_divider (
 	.clk(clk),
 	.rst(rst),
