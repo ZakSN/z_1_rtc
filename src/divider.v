@@ -39,7 +39,7 @@ always @(posedge clk) begin
 	rollover <= rollover;
 	one_hz <= 0;
 	half_hz_50 <= half_hz_50;
-	last_rollover <= rollover[6];
+	last_rollover <= rollover[ROLLOVER_WIDTH-1];
 	if (rst) begin
 		one_hz <= 0;
 		half_hz_50 <= 0;
@@ -47,7 +47,7 @@ always @(posedge clk) begin
 		rollover <= 0;
 		last_rollover <= 0;
 	end
-	if (rollover[6] && ~(last_rollover)) begin
+	if (rollover[ROLLOVER_WIDTH-1] && ~(last_rollover)) begin
 		counter <= counter + 1;
 	end
 	if (counter == INTERNAL_COUNT) begin
