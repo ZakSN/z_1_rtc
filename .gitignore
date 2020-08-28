@@ -2,10 +2,16 @@
 !src/
 !sim/
 !src/python
+!firmware
+!firmware/z_1_rtc_lcd
+
 !*.lpf
 !*.lpf
 !*.v
 !*.py
+!*.c
+!*.h
+
 !Makefile
 !.gitignore
 !README
