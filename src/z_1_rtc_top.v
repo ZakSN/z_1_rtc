@@ -2,45 +2,60 @@ module z_1_rtc_top (
 	`ifdef SIM
 		input sim_clk,
 	`endif
-	input pin1, // sclk
-	input pin2, // mosi
-	output pin3, // miso
-	input pin4, // ss
+	//***SPI0 BUS***
+	inout  pin11, // SPI0_CLK
+	inout  pin4,  // SPI0_MOSI
+	inout pin20, // SPI0_MISO
+	input  pin18, // SPI0_CS/b_ATMEGA328PB_RST
+	
+	//***EPOCH CNTRL***
+	input  pin1,  // EPOCH_S
+	input  pin2,  // EPOCH_R
 
-	input pin5, // master frequency
-	input pin6, // epoch set
-	input pin7, // epoch reset
-
-	//input pin8,
-	output pin9,
-	//inout pin10_sda,
-	//inout pin11_scl,
-	//output pin16,
-	//output pin17,
-	//output pin18,
-	//inout pin19_sclk,
-	//inout pin20,
-	//inout pin21,
-
-	input pin22 // global reset
+	//***MFREQ & RST***
+	input  pin5,  // MASTER_FREQ
+	input  pin22, // b_FPGA_RST
+	
+	//***OUTPUT PINS***
+	//inout pin6,  // out1 (TIMER_S)
+	//inout pin7,  // out2 (TIMER_R)
+	output pin19, // out3 (half_hz_50)
+	//output pin21, // out4
+	output pin3  // out5
+	//inout pin8,  // out6
+	//inout pin9,  // out7
+	//inout pin10, // out8
+	//inout pin16, // out9
+	//inout pin17, // out10
+	
+	//***UNUSED***
+	//PRGM pin12,
+	//PRGM pin13,
+	//PRGM pin14,
+	//PRGM pin15,
 );
 
 // global clk and rst
 wire clk, rst;
-assign rst = pin22;
+assign rst = ~pin22;
 
-// external SPI interface pins
+// SPI0 interface
 wire sclk, mosi, miso, ss;
-assign sclk = pin1;
-assign mosi = pin2;
-assign miso = pin3;
-assign ss = pin4;
+assign ss = pin18;
+
+assign pin11 = ss ? pin11 : 1'bz;
+assign sclk = pin11;
+
+assign pin4 = ss ? pin4 : 1'bz;
+assign mosi = pin4;
+
+assign pin20 = ss ? miso : 1'bz;
 
 // other external pins
 wire frequency_source, epoch_set, epoch_reset;
 assign frequency_source = pin5;
-assign epoch_set = pin6;
-assign epoch_reset = pin7;
+assign epoch_set = pin1;
+assign epoch_reset = pin2;
 
 // SPI internal signals
 wire [7:0] o_spi_data, i_spi_data;
@@ -53,11 +68,14 @@ wire epoch_le, epoch_ce;
 // divider signals
 wire one_hz;
 wire half_hz_50;
-assign pin9 = half_hz_50;
+
+// debug outputs
+assign pin19 = rst;
+assign pin3 = half_hz_50;
 
 `ifndef SIM
 OSCH #(
-	.NOM_FREQ("53.20")
+	.NOM_FREQ("88.67")
 ) internal_oscillator_inst (
 	.STDBY(1'b0),
 	.OSC(clk)
@@ -67,8 +85,10 @@ assign clk = sim_clk;
 `endif
 
 divider #(
-	.INTERNAL_COUNT(375),
-	.ROLLOVER_WIDTH(16)
+	//.INTERNAL_COUNT(375),
+	.INTERNAL_COUNT(78125),
+	//.ROLLOVER_WIDTH(16)
+	.ROLLOVER_WIDTH(8)
 ) main_divider (
 	.clk(clk),
 	.rst(rst),
@@ -83,7 +103,6 @@ spi_slave spi (
 	.sclk(sclk),
 	.mosi(mosi),
 	.miso(miso),
-	.ss(ss),
 	.tx_buffer(i_spi_data),
 	.wr(spi_we),
 	.tx_halt(spi_halt),

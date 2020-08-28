@@ -15,7 +15,6 @@ module spi_slave #(
 	input sclk,
 	input mosi,
 	output reg miso,
-	input ss,
 
 	// buffer to serialize and transmit
 	input [TXWIDTH-1:0] tx_buffer,
