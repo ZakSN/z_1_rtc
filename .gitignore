@@ -1,9 +1,10 @@
 *
 !src/
 !sim/
-!src/python
 !firmware
-!firmware/z_1_rtc_lcd
+!firmware/avr
+!firmware/avr/z_1_rtc_lcd
+!firmware/esp32
 
 !*.lpf
 !*.lpf
@@ -14,4 +15,4 @@
 
 !Makefile
 !.gitignore
-!README
+!README.md
