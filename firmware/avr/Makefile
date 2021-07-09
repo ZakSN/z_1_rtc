@@ -1,5 +1,7 @@
-main=spi_tst
+main=z_1_rtc_main
 lcd=z_1_rtc_lcd/z_1_rtc_lcd
+spi=z_1_rtc_spi/z_1_rtc_spi
+#uart=z_1_rtc_uart/z_1_rtc_uart
 cflags=-Wall -Werror -Wextra -Os
 avrType=atmega328pb
 programmerType=usbtiny
@@ -9,10 +11,11 @@ baud=19200
 
 all: $(main).hex
 
-$(main).hex: $(main).c $(lcd).c
+$(main).hex: $(main).c $(lcd).c $(spi).c
 	avr-gcc $(cflags) -mmcu=$(avrType) -c -o $(main).o $(main).c
 	avr-gcc $(cflags) -mmcu=$(avrType) -c -o $(lcd).o $(lcd).c
-	avr-gcc $(cflags) -mmcu=$(avrType) -o $(main).elf $(main).o $(lcd).o
+	avr-gcc $(cflags) -mmcu=$(avrType) -c -o $(spi).o $(spi).c
+	avr-gcc $(cflags) -mmcu=$(avrType) -o $(main).elf $(main).o $(lcd).o $(spi).o
 	avr-objcopy -j .text -j .data -O ihex $(main).elf $(main).hex
 
 flash: $(main).hex

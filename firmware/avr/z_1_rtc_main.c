@@ -3,47 +3,10 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include "z_1_rtc_lcd/z_1_rtc_lcd.h"
+#include "z_1_rtc_spi/z_1_rtc_spi.h"
 
-//SPI1 pins
-//PC0 // MISO1
-//PC1 // SCK1
-//PE2 // /SS
-//PE3 // MOSI
 
-void spi_init_master (void);
-unsigned char spi_transceiver (unsigned char data);
-
-// Initialize SPI Master Device (without interrupt)
-void spi_init_master (void)
-{
-
-    sei();
-    PRR1 = PRR1 & ~(1<<PRSPI1);
-    // Set MOSI, SCK, SS as Output
-    //DDRE = (DDRE & ~(0x3<<2)) | (0x3<<3);
-    //DDRC = (DDRC & ~(1<<1)) | 1<<1;
-    set_output(DDRE, PE2);
-    set_output(DDRE, PE3);
-    set_output(DDRC, PC1);
-    set_input(DDRC, PC0);
-
-    // Enable SPI, Set as Master
-    //Prescaler: Fosc/128
-    SPCR1 = (1<<SPE)|(1<<MSTR)|(0x3<<SPR0)|(0<<SPIE);
-}
-
-//Function to send and receive data for both master and slave
-unsigned char spi_tranceiver (unsigned char data)
-{
-    // Load data into the buffer
-    SPDR1 = data;
-
-    //Wait until transmission complete
-    while(!(SPSR1 & (1<<SPIF) ));
-    
-    // Return received data
-    return(SPDR1);
-}
+char nybble_to_hex(unsigned char);
 
 char nybble_to_hex(unsigned char nybble) {
 	if (nybble > 0xF) {

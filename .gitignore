@@ -6,6 +6,8 @@
 !firmware
 !firmware/avr
 !firmware/avr/z_1_rtc_lcd
+!firmware/avr/z_1_rtc_spi
+!firmware/avr/z_1_rtc_uart
 !firmware/esp32
 
 !*.lpf
