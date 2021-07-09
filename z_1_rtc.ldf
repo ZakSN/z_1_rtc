@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BaliProject version="3.2" title="z_1_rtc" device="LCMXO2-2000HC-5TG100I" default_implementation="impl1">
+    <Options/>
+    <Implementation title="impl1" dir="impl1" description="impl1" synthesis="lse" default_strategy="Strategy1">
+        <Options def_top="z_1_rtc_top"/>
+        <Source name="verilog/src/divider.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="verilog/src/register.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="verilog/src/spi_fsm.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="verilog/src/spi_slave.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="verilog/src/spi_test_top.v" type="Verilog" type_short="Verilog">
+            <Options top_module="spi_test_top"/>
+        </Source>
+        <Source name="verilog/src/trigger.v" type="Verilog" type_short="Verilog">
+            <Options top_module="trigger"/>
+        </Source>
+        <Source name="verilog/src/timer.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="verilog/src/z_1_rtc_top.v" type="Verilog" type_short="Verilog">
+            <Options top_module="z_1_rtc_top"/>
+        </Source>
+        <Source name="z_1_rtc.lpf" type="Logic Preference" type_short="LPF">
+            <Options/>
+        </Source>
+    </Implementation>
+    <Strategy name="Strategy1" file="z_1_rtc1.sty"/>
+</BaliProject>

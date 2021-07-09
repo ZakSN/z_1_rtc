@@ -1,13 +1,15 @@
 *
-!src/
-!sim/
+!software
+!verilog
+!verilog/src/
+!verilog/sim/
 !firmware
 !firmware/avr
 !firmware/avr/z_1_rtc_lcd
 !firmware/esp32
 
 !*.lpf
-!*.lpf
+!*.ldf
 !*.v
 !*.py
 !*.c
