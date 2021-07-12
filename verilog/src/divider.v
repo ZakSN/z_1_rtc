@@ -19,18 +19,21 @@ module divider #(
 );
 
 reg s_trig;
+reg last_s_trig;
 wire trig_edge_pulse;
 reg [(ROLLOVER_WIDTH-1):0] rollover;
 integer counter;
 reg last_rollover;
 
 // synchronize the external source
-assign trig_edge_pulse = trig && (~s_trig);
+assign trig_edge_pulse = s_trig && (~last_s_trig);
 
 always @(posedge clk) begin
+	last_s_trig <= s_trig;
 	s_trig <= trig;
 	if (rst) begin
 		s_trig <= 0;
+		last_s_trig <= 0;
 	end
 end
 
