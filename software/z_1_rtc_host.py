@@ -1,6 +1,7 @@
 #!/bin/python3
 import serial
 import time
+import datetime
 
 def get_z_1_rtc_epoch(ser):
 	no_epoch = True
@@ -68,8 +69,9 @@ def main():
 	ser.write(utc_offset.to_bytes(1, byteorder='big', signed=True))
 
 	time.sleep(1)
-
-	default_fmt_str = "%A %e %B %Y %I:%M.%S %p"
+	
+	local_tz = datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo
+	default_fmt_str = "%a %d %b %Y\n%I:%M.%S %p\n"+str(local_tz)+" (UTC "+str(utc_offset)+")"
 	fmt_str = input("enter display format string [leave blank for default] ")
 	if fmt_str == "":
 		fmt_str = default_fmt_str

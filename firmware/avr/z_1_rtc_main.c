@@ -80,6 +80,52 @@ uint64_t get_fpga_epoch(void){
 	return epoch_to_int(epoch);
 }
 
+void lcd_format(char* ln0, char* ln1, char* ln2, char* ln3, char* to_format){
+	int fmtidx = 0; // fmt str idx
+	int lnidx = 0; // line idx
+	int chidx = 0; // character idx
+	char* lines[4] = {ln0, ln1, ln2, ln3};
+	bool cont = true;
+	while(to_format[fmtidx] != '\0' && cont == true){
+		if(to_format[fmtidx] != '\n') {
+			lines[lnidx][chidx] = to_format[fmtidx];
+			fmtidx++;
+			chidx++;
+			if(chidx == 20){
+				lines[lnidx][chidx] = '\0';
+				lnidx++;
+				chidx = 0;
+			}
+			if(lnidx == 4){
+				cont = false;
+			}
+		}
+		else {
+			fmtidx++;
+			lines[lnidx][chidx] = '\0';
+			lnidx++;
+			chidx = 0;
+			if(lnidx == 4){
+				cont = false;
+			}
+		}
+	}
+	if (cont == true){
+		if((lnidx < 4) && (chidx < 21)){
+			lines[lnidx][chidx] = '\0';
+		}
+		lnidx++;
+		for(int i = lnidx; i < 4; i++){
+			lines[i][0] = '\0';
+		}
+	}
+	
+	ln0[20] = '\0';
+	ln1[20] = '\0';
+	ln2[20] = '\0';
+	ln3[20] = '\0';
+}
+
 int main(void) {
 
 	// init interfaces
@@ -181,16 +227,8 @@ int main(void) {
 		char ln2[21];
 		char ln3[21];
 		char ln4[21];
-		for (int i=0; i<20; i++){
-			ln1[i] = buffer[i];
-			ln2[i] = buffer[i+20];
-			ln3[i] = buffer[i+40];
-			ln4[i] = buffer[i+60];
-		}
-		ln1[20] = '\0';
-		ln2[20] = '\0';
-		ln3[20] = '\0';
-		ln4[20] = '\0';
+
+		lcd_format(ln1, ln2, ln3, ln4, buffer);
 		
 		lcd_send_screen(
 			ln1,
