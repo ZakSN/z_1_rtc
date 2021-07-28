@@ -28,13 +28,13 @@ def cal_mode(ser):
 	print("normalized unix epoch [s], accumulated error [s]")
 	logfile.write("normalized unix epoch [s], accumulated error [s]" + "\n")
 
-	z_epoch_start = get_z_1_rtc_epoch()
+	z_epoch_start = get_z_1_rtc_epoch(ser)
 	u_epoch_start = int(time.time())
 
 	while(True):
 		try:
 			unix_epoch = int(time.time())
-			z_1_rtc_epoch = get_z_1_rtc_epoch()
+			z_1_rtc_epoch = get_z_1_rtc_epoch(ser)
 			normalized_z_epoch = z_1_rtc_epoch - z_epoch_start
 			normalized_u_epoch = unix_epoch - u_epoch_start
 			accumulated_error = normalized_z_epoch - normalized_u_epoch
@@ -51,7 +51,7 @@ def main():
 	cm = input("Cal Mode [y/N] ")
 	if cm == 'y' or cm == 'Y':
 		ser.write(bytes('y'.encode('ascii')))
-		cal_mode()
+		cal_mode(ser)
 	else:
 		ser.write(bytes('n'.encode('ascii')))
 	
